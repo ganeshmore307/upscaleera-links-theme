@@ -1,27 +1,20 @@
 <?php
 /**
  * UpscaleEra Links child theme functions.
- * Elementor-first setup.
+ * GitHub deploys the complete Elementor Home page to WordPress page ID 12.
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-// The Home page is already stored in Elementor. Do not reseed/overwrite it.
-require_once get_stylesheet_directory() . '/inc/page12-logo-fix.php';
+require_once get_stylesheet_directory() . '/inc/page12-reference-home.php';
 
 function ue_links_setup() {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
     add_theme_support('align-wide');
     add_theme_support('responsive-embeds');
-    add_theme_support('custom-logo', array(
-        'height'      => 220,
-        'width'       => 520,
-        'flex-height' => true,
-        'flex-width'  => true,
-    ));
 }
 add_action('after_setup_theme', 'ue_links_setup', 20);
 
@@ -30,20 +23,167 @@ function ue_links_child_assets() {
         'ue-links-child',
         get_stylesheet_uri(),
         array(),
-        '1.7.0'
+        '2.0.0'
     );
 
-    wp_add_inline_style(
-        'ue-links-child',
-        'html,body.ue-elementor-site{margin:0;padding:0;background:#FFF8F0;} .ue-elementor-home{width:100%;margin:0;padding:0;overflow:hidden;} .ue-elementor-home .elementor{width:100%;} .ue-brand-logo img{max-width:245px;width:100%;height:auto;display:block;margin:0 auto;}'
-    );
+    $css = <<<'CSS'
+body.page-id-12{
+    margin:0;
+    background:#eadbc9;
+}
+body.page-id-12 .elementor.elementor-12{
+    width:100%;
+    max-width:470px;
+    min-height:100vh;
+    margin:0 auto;
+    overflow:hidden;
+    position:relative;
+    background-color:#fff8f0;
+    background-image:
+        radial-gradient(circle at -30% 22%, transparent 0 210px, rgba(242,106,33,.16) 212px, rgba(242,106,33,.16) 214px, transparent 216px),
+        radial-gradient(circle at 132% 66%, transparent 0 250px, rgba(242,106,33,.13) 252px, rgba(242,106,33,.13) 254px, transparent 256px),
+        radial-gradient(circle at -15% 93%, transparent 0 170px, rgba(242,106,33,.11) 172px, rgba(242,106,33,.11) 174px, transparent 176px);
+    box-shadow:0 24px 70px rgba(74,45,24,.13);
+}
+body.page-id-12 .elementor-section{
+    background:transparent;
+}
+.ue-brand-logo img{
+    width:100%;
+    max-width:255px;
+    height:auto;
+    display:block;
+    margin:0 auto;
+}
+.ue-hero .elementor-widget:not(:last-child){
+    margin-bottom:8px;
+}
+.ue-link-card{
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.ue-link-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 24px rgba(71,43,20,.08);
+    border-color:#f0b68f!important;
+}
+.ue-link-card .elementor-icon-box-wrapper{
+    display:flex!important;
+    align-items:center!important;
+    text-align:left!important;
+}
+.ue-link-card .elementor-icon-box-icon{
+    margin:0 16px 0 0!important;
+    flex:0 0 auto;
+}
+.ue-link-card .elementor-icon-box-content{
+    flex:1 1 auto;
+    min-width:0;
+}
+.ue-link-card .elementor-icon-box-title{
+    margin:0!important;
+}
+.ue-link-card .elementor-icon-box-title a{
+    display:flex!important;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    width:100%;
+    color:#1b1b1b!important;
+}
+.ue-link-card .elementor-icon-box-title a:after{
+    content:'→';
+    color:#f26a21;
+    font-size:26px;
+    line-height:1;
+    font-weight:400;
+}
+.ue-what-we-do-title .elementor-heading-title{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    letter-spacing:2.4px;
+}
+.ue-what-we-do-title .elementor-heading-title:before,
+.ue-what-we-do-title .elementor-heading-title:after{
+    content:'';
+    display:block;
+    width:56px;
+    height:1px;
+    background:linear-gradient(90deg, transparent, #d9a984);
+}
+.ue-what-we-do-title .elementor-heading-title:after{
+    background:linear-gradient(90deg, #d9a984, transparent);
+}
+.ue-services-row>.elementor-container{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:10px;
+}
+.ue-services-row .elementor-column{
+    width:50%!important;
+    flex:0 0 calc(50% - 5px)!important;
+}
+.ue-service-pill .elementor-icon-box-wrapper{
+    display:flex!important;
+    align-items:center!important;
+    text-align:left!important;
+}
+.ue-service-pill .elementor-icon-box-icon{
+    margin:0 9px 0 0!important;
+    flex:0 0 auto;
+}
+.ue-service-pill .elementor-icon-box-title{
+    margin:0!important;
+    white-space:nowrap;
+}
+.ue-bottom-cta-wrap>.elementor-container>.elementor-column{
+    box-shadow:0 12px 28px rgba(82,47,21,.05);
+}
+.ue-rocket-icon .elementor-icon{
+    font-size:28px!important;
+}
+.ue-social-row>.elementor-container{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    justify-content:center;
+}
+.ue-social-row .elementor-column{
+    width:25%!important;
+    flex:0 0 25%!important;
+}
+.ue-social-circle .elementor-icon{
+    width:42px;
+    height:42px;
+    display:inline-flex!important;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #e6d6c6;
+    border-radius:50%;
+    background:#fffaf4;
+    transition:transform .2s ease, border-color .2s ease;
+}
+.ue-social-circle .elementor-icon:hover{
+    transform:translateY(-2px);
+    border-color:#f26a21;
+}
+@media (max-width:480px){
+    body.page-id-12 .elementor.elementor-12{
+        max-width:100%;
+        box-shadow:none;
+    }
+    .ue-brand-logo img{
+        max-width:215px;
+    }
+    .ue-service-pill .elementor-icon-box-title{
+        font-size:11px!important;
+    }
+    .ue-service-pill .elementor-icon-box-icon{
+        margin-right:7px!important;
+    }
+}
+CSS;
+
+    wp_add_inline_style('ue-links-child', $css);
 }
 add_action('wp_enqueue_scripts', 'ue_links_child_assets', 50);
-
-function ue_links_body_classes($classes) {
-    if (is_front_page()) {
-        $classes[] = 'ue-elementor-site';
-    }
-    return $classes;
-}
-add_filter('body_class', 'ue_links_body_classes');
