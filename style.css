@@ -5,6 +5,89 @@ Description: Premium mobile-first links microsite for UpscaleEra. Child theme of
 Author: UpscaleEra
 Author URI: https://upscaleera.com/
 Template: noryx
-Version: 1.0.0
+Version: 1.0.1
 Text Domain: upscaleera-links
 */
+
+/*
+ * UpscaleEra link cards: always keep icon, text and arrow on one line.
+ * Elementor/Noryx switch icon boxes to a stacked mobile layout by default,
+ * so these selectors intentionally override that responsive rule.
+ */
+body.page-id-12 .elementor.elementor-12 .ue-link-card .elementor-icon-box-wrapper {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    text-align: left !important;
+}
+
+body.page-id-12 .elementor.elementor-12 .ue-link-card .elementor-icon-box-icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 42px !important;
+    width: 42px !important;
+    margin: 0 14px 0 0 !important;
+    padding: 0 !important;
+}
+
+body.page-id-12 .elementor.elementor-12 .ue-link-card .elementor-icon-box-content {
+    display: block !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.page-id-12 .elementor.elementor-12 .ue-link-card .elementor-icon-box-title {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.25 !important;
+}
+
+body.page-id-12 .elementor.elementor-12 .ue-link-card .elementor-icon-box-title a {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    width: 100% !important;
+    white-space: nowrap !important;
+}
+
+body.page-id-12 .elementor.elementor-12 .ue-link-card .elementor-icon-box-title a::after {
+    content: '\2192' !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    margin-left: auto !important;
+    color: #F26A21 !important;
+    font-size: 25px !important;
+    line-height: 1 !important;
+    font-weight: 400 !important;
+}
+
+/* Compact card height to match the supplied reference. */
+body.page-id-12 .elementor.elementor-12 .ue-link-card > .elementor-widget-container {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+}
+
+@media (max-width: 767px) {
+    body.page-id-12 .elementor.elementor-12 .elementor-widget-icon-box.ue-link-card .elementor-icon-box-wrapper {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+
+    body.page-id-12 .elementor.elementor-12 .elementor-widget-icon-box.ue-link-card .elementor-icon-box-icon {
+        margin: 0 14px 0 0 !important;
+    }
+}
