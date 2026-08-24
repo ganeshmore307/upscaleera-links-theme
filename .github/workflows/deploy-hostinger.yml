@@ -4,6 +4,15 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'functions.php'
+      - 'style.css'
+      - 'front-page.php'
+      - 'index.php'
+      - 'inc/**'
+      - 'assets/**'
+      - 'mu-plugin/**'
+      - '.github/workflows/deploy-hostinger.yml'
   workflow_dispatch:
 
 jobs:
@@ -29,6 +38,7 @@ jobs:
             **/.git*
             **/.git*/**
             **/.github/**
+            main-site-mu-plugin/**
             mu-plugin/**
             README.md
 
