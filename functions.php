@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 
 require_once get_stylesheet_directory() . '/inc/elementor-home-seeder.php';
 require_once get_stylesheet_directory() . '/inc/elementor-logo-patch.php';
+require_once get_stylesheet_directory() . '/inc/elementor-logo-upload-slot.php';
 
 function ue_links_setup() {
     add_theme_support('title-tag');
@@ -33,7 +34,7 @@ function ue_links_child_assets() {
         'ue-links-child',
         get_stylesheet_uri(),
         array(),
-        '1.3.0'
+        '1.4.0'
     );
 
     wp_add_inline_style(
