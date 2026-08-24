@@ -139,7 +139,7 @@ function ue_create_elementor_logo_upload_slot() {
         return;
     }
 
-    $patch_version = '1.0.0';
+    $patch_version = '1.0.1';
     if (get_option('ue_elementor_logo_upload_slot_version') === $patch_version) {
         return;
     }
@@ -181,7 +181,7 @@ function ue_create_elementor_logo_upload_slot() {
         update_option('ue_elementor_logo_upload_slot_page_id', (int) $page_id, false);
 
         if (class_exists('\\Elementor\\Plugin')) {
-            $elementor = \\Elementor\\Plugin::instance();
+            $elementor = \Elementor\Plugin::instance();
             if ($elementor && isset($elementor->files_manager)) {
                 $elementor->files_manager->clear_cache();
             }
