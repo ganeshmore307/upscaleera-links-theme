@@ -12,8 +12,11 @@ on:
       - 'inc/**'
       - 'assets/**'
       - 'mu-plugin/**'
-      - '.github/workflows/deploy-hostinger.yml'
   workflow_dispatch:
+
+concurrency:
+  group: upscaleera-subdomain-deploy
+  cancel-in-progress: true
 
 jobs:
   deploy:
