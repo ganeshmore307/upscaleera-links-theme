@@ -150,7 +150,9 @@ function ue_ref_service_box($seed, $title, $icon) {
         'position' => 'left',
         'title_size' => 'h5',
         'primary_color' => '#F26A21',
+        'secondary_color' => '#FFFFFF',
         'icon_size' => ue_ref_size(18),
+        'icon_padding' => ue_ref_size(0),
         'title_color' => '#1B1B1B',
         'title_typography_typography' => 'custom',
         'title_typography_font_family' => 'Manrope',
@@ -171,6 +173,7 @@ function ue_ref_icon($seed, $icon, $url = '', $color = '#1B1B1B', $class = '') {
     $settings = array(
         'selected_icon' => array('value' => $icon, 'library' => (strpos($icon, 'fab ') === 0 ? 'fa-brands' : 'fa-solid')),
         'primary_color' => $color,
+        'secondary_color' => '#FFFFFF',
         'size' => ue_ref_size(19),
         'align' => 'center',
         '_css_classes' => $class,
@@ -309,7 +312,7 @@ function ue_reference_home_data() {
     );
     $data[] = ue_ref_two_col_row('services-2',
         ue_ref_service_box('service-web', 'Web Development', 'fas fa-code'),
-        ue_ref_service_box('service-ai', 'AI Automation', 'fas fa-wand-magic-sparkles')
+        ue_ref_service_box('service-ai', 'AI Automation', 'fas fa-robot')
     );
 
     $rocket = ue_ref_icon('rocket', 'fas fa-rocket', '', '#F26A21', 'ue-rocket-icon');
@@ -337,7 +340,7 @@ function ue_reference_home_data() {
 
 function ue_apply_reference_homepage() {
     $page_id = 12;
-    $version = '2026.08.24-reference-v1';
+    $version = '2026.08.24-reference-v2-icon-fix';
 
     if (get_option('ue_reference_home_version') === $version) {
         return;
