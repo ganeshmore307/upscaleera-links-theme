@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-require_once get_stylesheet_directory() . '/inc/elementor-home-seeder.php';
+// The Home page is already stored in Elementor. Do not reseed/overwrite it.
 require_once get_stylesheet_directory() . '/inc/page12-logo-fix.php';
 
 function ue_links_setup() {
@@ -25,20 +25,17 @@ function ue_links_setup() {
 }
 add_action('after_setup_theme', 'ue_links_setup', 20);
 
-/**
- * Keep the child theme lightweight and Elementor-friendly.
- */
 function ue_links_child_assets() {
     wp_enqueue_style(
         'ue-links-child',
         get_stylesheet_uri(),
         array(),
-        '1.6.0'
+        '1.7.0'
     );
 
     wp_add_inline_style(
         'ue-links-child',
-        'html,body.ue-elementor-site{margin:0;padding:0;background:#FFF8F0;} .ue-elementor-home{width:100%;margin:0;padding:0;overflow:hidden;} .ue-elementor-home .elementor{width:100%;} .ue-brand-logo img{max-width:245px;width:100%;height:auto;}'
+        'html,body.ue-elementor-site{margin:0;padding:0;background:#FFF8F0;} .ue-elementor-home{width:100%;margin:0;padding:0;overflow:hidden;} .ue-elementor-home .elementor{width:100%;} .ue-brand-logo img{max-width:245px;width:100%;height:auto;display:block;margin:0 auto;}'
     );
 }
 add_action('wp_enqueue_scripts', 'ue_links_child_assets', 50);
