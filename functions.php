@@ -8,6 +8,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+require_once get_stylesheet_directory() . '/inc/elementor-home-seeder.php';
+
 function ue_links_setup() {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
@@ -24,26 +26,22 @@ add_action('after_setup_theme', 'ue_links_setup', 20);
 
 /**
  * Keep the child theme lightweight and Elementor-friendly.
- * Elementor and the Noryx parent theme can load the assets they need normally.
  */
 function ue_links_child_assets() {
     wp_enqueue_style(
         'ue-links-child',
         get_stylesheet_uri(),
         array(),
-        '1.1.0'
+        '1.2.0'
     );
 
     wp_add_inline_style(
         'ue-links-child',
-        'body.ue-elementor-site{margin:0;padding:0;} .ue-elementor-home{width:100%;margin:0;padding:0;overflow:hidden;} .ue-elementor-home .elementor{width:100%;}'
+        'html,body.ue-elementor-site{margin:0;padding:0;background:#FFF8F0;} .ue-elementor-home{width:100%;margin:0;padding:0;overflow:hidden;} .ue-elementor-home .elementor{width:100%;}'
     );
 }
 add_action('wp_enqueue_scripts', 'ue_links_child_assets', 50);
 
-/**
- * Give Elementor the cleanest possible editing canvas on the static homepage.
- */
 function ue_links_body_classes($classes) {
     if (is_front_page()) {
         $classes[] = 'ue-elementor-site';
