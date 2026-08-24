@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 require_once get_stylesheet_directory() . '/inc/customizer.php';
+require_once get_stylesheet_directory() . '/inc/admin-settings.php';
 
 function ue_links_setup() {
     add_theme_support('custom-logo', array(
