@@ -49,7 +49,7 @@ jobs:
               --max-time 60 \
               --user "$AUTH" \
               --list-only \
-              "ftp://${HOST}${path}"
+              "ftp://${HOST}${path}" | tr -d '\r'
           }
 
           echo "Checking FTP root..."
