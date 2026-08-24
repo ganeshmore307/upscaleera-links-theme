@@ -145,7 +145,6 @@ function ue_el_section($elements, $background = '#FFF8F0', $padding = null, $mar
 
 function ue_build_elementor_home_data() {
     $data = array();
-
     $logo_id = (int) get_theme_mod('custom_logo');
     $hero = array();
 
@@ -169,7 +168,6 @@ function ue_build_elementor_home_data() {
     $hero[] = ue_el_text('<strong style="letter-spacing:.24em;color:#F26622;font-size:10px;">DIGITAL GROWTH AGENCY</strong>', 10, '#F26622');
     $hero[] = ue_el_heading('Performance. Creativity. Growth.', 48, '#171717', 'center', 'h1');
     $hero[] = ue_el_text('Performance marketing, creative strategy, websites and AI automation — built to help ambitious brands grow.', 14, '#746E67');
-
     $data[] = ue_el_section($hero, '#FFF8F0', ue_el_edge(46, 22, 26, 22));
 
     $data[] = ue_el_section(array(
@@ -232,7 +230,7 @@ function ue_install_elementor_homepage() {
         return;
     }
 
-    $seed_version = '3.0.0';
+    $seed_version = '3.0.1';
     if (get_option('ue_elementor_home_seed_version') === $seed_version) {
         return;
     }
@@ -264,12 +262,10 @@ function ue_install_elementor_homepage() {
         'post_content' => '',
     ));
 
-    $data = ue_build_elementor_home_data();
-
     update_post_meta($front_id, '_elementor_edit_mode', 'builder');
     update_post_meta($front_id, '_elementor_template_type', 'wp-page');
     update_post_meta($front_id, '_elementor_version', defined('ELEMENTOR_VERSION') ? ELEMENTOR_VERSION : '3.0.0');
-    update_post_meta($front_id, '_elementor_data', wp_slash(wp_json_encode($data)));
+    update_post_meta($front_id, '_elementor_data', wp_slash(wp_json_encode(ue_build_elementor_home_data())));
     update_post_meta($front_id, '_elementor_page_settings', array('hide_title' => 'yes'));
     update_post_meta($front_id, '_wp_page_template', 'elementor_canvas');
 
@@ -278,7 +274,10 @@ function ue_install_elementor_homepage() {
     update_option('ue_elementor_home_seed_version', $seed_version, false);
 
     if (class_exists('Elementor\\Plugin')) {
-        Elementor\\Plugin::$instance->files_manager->clear_cache();
+        $elementor = \Elementor\Plugin::instance();
+        if ($elementor && isset($elementor->files_manager)) {
+            $elementor->files_manager->clear_cache();
+        }
     }
 }
 add_action('admin_init', 'ue_install_elementor_homepage', 30);
