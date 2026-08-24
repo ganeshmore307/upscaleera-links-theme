@@ -1,7 +1,7 @@
 <?php
 /**
  * One-time direct fix for UpscaleEra Home page ID 12.
- * Replaces the 'upscaleEra' heading widget with the real logo Image widget.
+ * Removes the text wordmark and inserts the real logo as the first Elementor widget.
  */
 
 if (!defined('ABSPATH')) {
@@ -12,7 +12,7 @@ function ue_page12_logo_widget() {
     $logo_url = trailingslashit(get_stylesheet_directory_uri()) . 'assets/images/upscaleera-logo.png';
 
     return array(
-        'id' => substr(md5('ue-page12-logo-v1'), 0, 8),
+        'id' => substr(md5('ue-page12-logo-v13'), 0, 8),
         'elType' => 'widget',
         'widgetType' => 'image',
         'settings' => array(
@@ -41,9 +41,48 @@ function ue_page12_logo_widget() {
     );
 }
 
-function ue_page12_replace_wordmark(&$items, &$changed) {
+function ue_page12_remove_old_brand_widgets(&$items) {
     if (!is_array($items)) {
         return;
+    }
+
+    foreach ($items as $index => &$item) {
+        if (!is_array($item)) {
+            continue;
+        }
+
+        $type = isset($item['widgetType']) ? (string) $item['widgetType'] : '';
+        $settings = isset($item['settings']) && is_array($item['settings']) ? $item['settings'] : array();
+        $remove = false;
+
+        if ($type === 'heading' && !empty($settings['title']) && stripos((string) $settings['title'], 'upscale') !== false) {
+            $remove = true;
+        }
+
+        if ($type === 'image') {
+            $url = isset($settings['image']['url']) ? (string) $settings['image']['url'] : '';
+            $classes = isset($settings['_css_classes']) ? (string) $settings['_css_classes'] : '';
+            if (stripos($url, 'upscaleera-logo') !== false || stripos($classes, 'ue-brand-logo') !== false) {
+                $remove = true;
+            }
+        }
+
+        if ($remove) {
+            unset($items[$index]);
+            continue;
+        }
+
+        if (!empty($item['elements']) && is_array($item['elements'])) {
+            ue_page12_remove_old_brand_widgets($item['elements']);
+        }
+    }
+
+    $items = array_values($items);
+}
+
+function ue_page12_insert_logo_first(&$items) {
+    if (!is_array($items)) {
+        return false;
     }
 
     foreach ($items as &$item) {
@@ -51,22 +90,24 @@ function ue_page12_replace_wordmark(&$items, &$changed) {
             continue;
         }
 
-        $type = isset($item['widgetType']) ? (string) $item['widgetType'] : '';
-        $title = isset($item['settings']['title']) ? wp_strip_all_tags((string) $item['settings']['title']) : '';
+        $el_type = isset($item['elType']) ? (string) $item['elType'] : '';
 
-        if ($type === 'heading' && stripos($title, 'upscale') !== false) {
-            $item = ue_page12_logo_widget();
-            $changed = true;
-            return;
+        if ($el_type === 'column' || $el_type === 'container') {
+            if (!isset($item['elements']) || !is_array($item['elements'])) {
+                $item['elements'] = array();
+            }
+            array_unshift($item['elements'], ue_page12_logo_widget());
+            return true;
         }
 
         if (!empty($item['elements']) && is_array($item['elements'])) {
-            ue_page12_replace_wordmark($item['elements'], $changed);
-            if ($changed) {
-                return;
+            if (ue_page12_insert_logo_first($item['elements'])) {
+                return true;
             }
         }
     }
+
+    return false;
 }
 
 function ue_force_page12_logo() {
@@ -75,7 +116,7 @@ function ue_force_page12_logo() {
     }
 
     $page_id = 12;
-    $version = '12.0.1';
+    $version = '13.0.0';
 
     if (get_option('ue_page12_logo_fix_version') === $version) {
         return;
@@ -94,10 +135,9 @@ function ue_force_page12_logo() {
         return;
     }
 
-    $changed = false;
-    ue_page12_replace_wordmark($data, $changed);
+    ue_page12_remove_old_brand_widgets($data);
 
-    if (!$changed) {
+    if (!ue_page12_insert_logo_first($data)) {
         return;
     }
 
@@ -121,7 +161,8 @@ function ue_page12_logo_fix_notice() {
     if (!get_transient('ue_page12_logo_fix_notice')) {
         return;
     }
+
     delete_transient('ue_page12_logo_fix_notice');
-    echo '<div class="notice notice-success is-dismissible"><p><strong>UpscaleEra logo fixed:</strong> page 12 wordmark was replaced by an editable Elementor Image widget.</p></div>';
+    echo '<div class="notice notice-success is-dismissible"><p><strong>UpscaleEra logo placed:</strong> the actual logo is now the first Elementor widget on Home page ID 12.</p></div>';
 }
 add_action('admin_notices', 'ue_page12_logo_fix_notice');
