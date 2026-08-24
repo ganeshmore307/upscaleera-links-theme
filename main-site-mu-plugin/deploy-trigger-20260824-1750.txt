@@ -1,0 +1,1 @@
+Trigger main UpscaleEra /links/ deployment after FTP root auto-detection fix.
