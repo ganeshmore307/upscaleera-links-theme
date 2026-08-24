@@ -23,7 +23,7 @@ function ue_links_child_assets() {
         'ue-links-child',
         get_stylesheet_uri(),
         array(),
-        '2.0.1'
+        '2.0.2'
     );
 
     $css = <<<'CSS'
@@ -67,7 +67,7 @@ body.page-id-12 .elementor-section{
     border-color:#f0b68f!important;
 }
 
-/* Link cards: icon | text | arrow in a single row on ALL breakpoints. */
+/* Link cards: icon | text | arrow in one row. */
 body.page-id-12 .ue-link-card.elementor-widget-icon-box .elementor-icon-box-wrapper,
 body.page-id-12 .ue-link-card .elementor-icon-box-wrapper{
     display:flex!important;
@@ -144,19 +144,40 @@ body.page-id-12 .ue-link-card .elementor-icon-box-title a:after{
     width:50%!important;
     flex:0 0 calc(50% - 5px)!important;
 }
-.ue-service-pill .elementor-icon-box-wrapper{
+
+/* Service pills: icon + label always inline. */
+body.page-id-12 .ue-service-pill.elementor-widget-icon-box .elementor-icon-box-wrapper,
+body.page-id-12 .ue-service-pill .elementor-icon-box-wrapper{
     display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
     align-items:center!important;
+    justify-content:flex-start!important;
     text-align:left!important;
 }
-.ue-service-pill .elementor-icon-box-icon{
+body.page-id-12 .ue-service-pill .elementor-icon-box-icon{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:0 0 auto!important;
     margin:0 9px 0 0!important;
-    flex:0 0 auto;
+    padding:0!important;
 }
-.ue-service-pill .elementor-icon-box-title{
+body.page-id-12 .ue-service-pill .elementor-icon-box-content{
+    flex:1 1 auto!important;
+    width:auto!important;
+    min-width:0!important;
     margin:0!important;
-    white-space:nowrap;
 }
+body.page-id-12 .ue-service-pill .elementor-icon-box-title{
+    margin:0!important;
+    white-space:nowrap!important;
+    line-height:1.15!important;
+}
+body.page-id-12 .ue-service-pill .elementor-icon-box-title a{
+    white-space:nowrap!important;
+}
+
 .ue-bottom-cta-wrap>.elementor-container>.elementor-column{
     box-shadow:0 12px 28px rgba(82,47,21,.05);
 }
@@ -197,7 +218,6 @@ body.page-id-12 .ue-link-card .elementor-icon-box-title a:after{
         max-width:215px;
     }
 
-    /* Override Elementor's mobile icon-box stacking rules. */
     body.page-id-12 .ue-link-card.elementor-widget-icon-box .elementor-icon-box-wrapper,
     body.page-id-12 .ue-link-card.elementor-widget-icon-box.elementor-position-top .elementor-icon-box-wrapper,
     body.page-id-12 .ue-link-card.elementor-widget-icon-box.elementor-mobile-position-top .elementor-icon-box-wrapper,
@@ -230,11 +250,33 @@ body.page-id-12 .ue-link-card .elementor-icon-box-title a:after{
         white-space:nowrap!important;
     }
 
-    .ue-service-pill .elementor-icon-box-title{
-        font-size:11px!important;
+    /* Force service pill icon + text onto the same row on mobile. */
+    body.page-id-12 .ue-service-pill.elementor-widget-icon-box .elementor-icon-box-wrapper,
+    body.page-id-12 .ue-service-pill.elementor-widget-icon-box.elementor-position-top .elementor-icon-box-wrapper,
+    body.page-id-12 .ue-service-pill.elementor-widget-icon-box.elementor-mobile-position-top .elementor-icon-box-wrapper,
+    body.page-id-12 .ue-service-pill .elementor-icon-box-wrapper{
+        display:flex!important;
+        flex-direction:row!important;
+        flex-wrap:nowrap!important;
+        align-items:center!important;
+        justify-content:flex-start!important;
+        text-align:left!important;
     }
-    .ue-service-pill .elementor-icon-box-icon{
-        margin-right:7px!important;
+    body.page-id-12 .ue-service-pill .elementor-icon-box-icon{
+        margin:0 7px 0 0!important;
+        flex:0 0 20px!important;
+        padding:0!important;
+    }
+    body.page-id-12 .ue-service-pill .elementor-icon-box-content{
+        flex:1 1 auto!important;
+        width:auto!important;
+        min-width:0!important;
+    }
+    body.page-id-12 .ue-service-pill .elementor-icon-box-title{
+        margin:0!important;
+        font-size:11px!important;
+        white-space:nowrap!important;
+        line-height:1.1!important;
     }
 }
 CSS;
