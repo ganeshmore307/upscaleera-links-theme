@@ -1,35 +1,37 @@
 <?php
 /**
- * Adds a blank, editable Elementor Image widget at the top of the UpscaleEra
- * Home page so the logo can be uploaded/replaced directly in Elementor.
+ * Final one-time UpscaleEra Elementor logo placement.
+ * Places the actual UpscaleEra logo at the top of the hero as an editable Image widget.
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-function ue_logo_upload_slot_widget($page_id) {
+function ue_final_logo_widget($page_id) {
+    $logo_url = trailingslashit(get_stylesheet_directory_uri()) . 'assets/images/upscaleera-logo.png';
+
     return array(
-        'id' => substr(md5('ue-logo-upload-slot-' . $page_id), 0, 8),
+        'id' => substr(md5('ue-final-logo-' . $page_id), 0, 8),
         'elType' => 'widget',
         'widgetType' => 'image',
         'settings' => array(
             'image' => array(
-                'url' => '',
-                'id' => '',
-                'alt' => 'Upload UpscaleEra Logo',
+                'url' => $logo_url,
+                'id' => 0,
+                'alt' => 'UpscaleEra Logo',
             ),
             'image_size' => 'full',
             'align' => 'center',
             'width' => array('unit' => 'px', 'size' => 245, 'sizes' => array()),
             'width_tablet' => array('unit' => 'px', 'size' => 220, 'sizes' => array()),
             'width_mobile' => array('unit' => 'px', 'size' => 190, 'sizes' => array()),
-            '_css_classes' => 'ue-logo-upload-slot',
+            '_css_classes' => 'ue-brand-logo',
             '_margin' => array(
                 'unit' => 'px',
                 'top' => '0',
                 'right' => '0',
-                'bottom' => '16',
+                'bottom' => '18',
                 'left' => '0',
                 'isLinked' => false,
             ),
@@ -39,27 +41,43 @@ function ue_logo_upload_slot_widget($page_id) {
     );
 }
 
-function ue_page_data_is_upscaleera_home($items) {
-    if (!is_array($items)) {
+function ue_final_item_has_hero_marker($item) {
+    if (!is_array($item)) {
         return false;
     }
 
-    foreach ($items as $item) {
-        if (!is_array($item)) {
-            continue;
-        }
-
-        $settings = isset($item['settings']) && is_array($item['settings']) ? $item['settings'] : array();
-        foreach (array('title', 'editor', 'description_text', 'title_text') as $key) {
-            if (!empty($settings[$key])) {
-                $text = wp_strip_all_tags((string) $settings[$key]);
-                if (stripos($text, 'Performance. Creativity. Growth.') !== false || stripos($text, 'DIGITAL GROWTH AGENCY') !== false) {
-                    return true;
-                }
+    $settings = isset($item['settings']) && is_array($item['settings']) ? $item['settings'] : array();
+    foreach (array('title', 'editor', 'title_text', 'description_text') as $key) {
+        if (!empty($settings[$key])) {
+            $text = wp_strip_all_tags((string) $settings[$key]);
+            if (
+                stripos($text, 'Performance. Creativity. Growth.') !== false ||
+                stripos($text, 'DIGITAL GROWTH AGENCY') !== false ||
+                stripos($text, 'DIGITAL GROWTH STUDIO') !== false
+            ) {
+                return true;
             }
         }
+    }
 
-        if (!empty($item['elements']) && ue_page_data_is_upscaleera_home($item['elements'])) {
+    if (!empty($item['elements']) && is_array($item['elements'])) {
+        foreach ($item['elements'] as $child) {
+            if (ue_final_item_has_hero_marker($child)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+function ue_final_page_is_target($data) {
+    if (!is_array($data)) {
+        return false;
+    }
+
+    foreach ($data as $item) {
+        if (ue_final_item_has_hero_marker($item)) {
             return true;
         }
     }
@@ -67,7 +85,7 @@ function ue_page_data_is_upscaleera_home($items) {
     return false;
 }
 
-function ue_remove_logo_area_widgets(&$items) {
+function ue_final_remove_old_logo_widgets(&$items) {
     if (!is_array($items)) {
         return;
     }
@@ -77,7 +95,7 @@ function ue_remove_logo_area_widgets(&$items) {
             continue;
         }
 
-        $type = isset($item['widgetType']) ? $item['widgetType'] : '';
+        $type = isset($item['widgetType']) ? (string) $item['widgetType'] : '';
         $settings = isset($item['settings']) && is_array($item['settings']) ? $item['settings'] : array();
         $remove = false;
 
@@ -88,7 +106,11 @@ function ue_remove_logo_area_widgets(&$items) {
         if ($type === 'image') {
             $url = isset($settings['image']['url']) ? (string) $settings['image']['url'] : '';
             $classes = isset($settings['_css_classes']) ? (string) $settings['_css_classes'] : '';
-            if (stripos($url, 'upscaleera-logo') !== false || stripos($classes, 'ue-logo-upload-slot') !== false) {
+            if (
+                stripos($url, 'upscaleera-logo') !== false ||
+                stripos($classes, 'ue-logo-upload-slot') !== false ||
+                stripos($classes, 'ue-brand-logo') !== false
+            ) {
                 $remove = true;
             }
         }
@@ -99,14 +121,14 @@ function ue_remove_logo_area_widgets(&$items) {
         }
 
         if (!empty($item['elements']) && is_array($item['elements'])) {
-            ue_remove_logo_area_widgets($item['elements']);
+            ue_final_remove_old_logo_widgets($item['elements']);
         }
     }
 
     $items = array_values($items);
 }
 
-function ue_insert_logo_upload_slot(&$items, $page_id) {
+function ue_final_insert_logo_in_hero(&$items, $page_id) {
     if (!is_array($items)) {
         return false;
     }
@@ -116,16 +138,17 @@ function ue_insert_logo_upload_slot(&$items, $page_id) {
             continue;
         }
 
-        if (($item['elType'] ?? '') === 'column' || ($item['elType'] ?? '') === 'container') {
+        $el_type = isset($item['elType']) ? (string) $item['elType'] : '';
+        if (($el_type === 'column' || $el_type === 'container') && ue_final_item_has_hero_marker($item)) {
             if (!isset($item['elements']) || !is_array($item['elements'])) {
                 $item['elements'] = array();
             }
-            array_unshift($item['elements'], ue_logo_upload_slot_widget($page_id));
+            array_unshift($item['elements'], ue_final_logo_widget($page_id));
             return true;
         }
 
         if (!empty($item['elements']) && is_array($item['elements'])) {
-            if (ue_insert_logo_upload_slot($item['elements'], $page_id)) {
+            if (ue_final_insert_logo_in_hero($item['elements'], $page_id)) {
                 return true;
             }
         }
@@ -134,17 +157,29 @@ function ue_insert_logo_upload_slot(&$items, $page_id) {
     return false;
 }
 
-function ue_create_elementor_logo_upload_slot() {
+function ue_apply_final_home_logo() {
     if (!is_admin() || !current_user_can('edit_pages')) {
         return;
     }
 
-    $patch_version = '1.0.1';
-    if (get_option('ue_elementor_logo_upload_slot_version') === $patch_version) {
+    $patch_version = '10.0.0';
+    if (get_option('ue_final_home_logo_version') === $patch_version) {
         return;
     }
 
-    $page_ids = get_posts(array(
+    $candidate_ids = array();
+
+    $front_id = (int) get_option('page_on_front');
+    if ($front_id) {
+        $candidate_ids[] = $front_id;
+    }
+
+    $home = get_page_by_path('home');
+    if ($home) {
+        $candidate_ids[] = (int) $home->ID;
+    }
+
+    $elementor_pages = get_posts(array(
         'post_type' => 'page',
         'post_status' => array('publish', 'draft', 'private', 'pending'),
         'posts_per_page' => -1,
@@ -157,28 +192,34 @@ function ue_create_elementor_logo_upload_slot() {
         ),
     ));
 
-    foreach ($page_ids as $page_id) {
+    $candidate_ids = array_values(array_unique(array_merge($candidate_ids, array_map('intval', $elementor_pages))));
+
+    foreach ($candidate_ids as $page_id) {
         $raw = get_post_meta($page_id, '_elementor_data', true);
         if (!$raw) {
             continue;
         }
 
-        $data = json_decode(wp_unslash($raw), true);
-        if (!is_array($data) || !ue_page_data_is_upscaleera_home($data)) {
+        $data = json_decode($raw, true);
+        if (!is_array($data)) {
+            $data = json_decode(wp_unslash($raw), true);
+        }
+
+        if (!is_array($data) || !ue_final_page_is_target($data)) {
             continue;
         }
 
-        ue_remove_logo_area_widgets($data);
+        ue_final_remove_old_logo_widgets($data);
 
-        if (!ue_insert_logo_upload_slot($data, (int) $page_id)) {
+        if (!ue_final_insert_logo_in_hero($data, $page_id)) {
             continue;
         }
 
         update_post_meta($page_id, '_elementor_data', wp_slash(wp_json_encode($data)));
         delete_post_meta($page_id, '_elementor_css');
         delete_post_meta($page_id, '_elementor_controls_usage');
-        update_option('ue_elementor_logo_upload_slot_version', $patch_version, false);
-        update_option('ue_elementor_logo_upload_slot_page_id', (int) $page_id, false);
+        update_option('ue_final_home_logo_version', $patch_version, false);
+        update_option('ue_final_home_logo_page_id', $page_id, false);
 
         if (class_exists('\\Elementor\\Plugin')) {
             $elementor = \Elementor\Plugin::instance();
@@ -187,19 +228,19 @@ function ue_create_elementor_logo_upload_slot() {
             }
         }
 
-        set_transient('ue_logo_upload_slot_notice', (int) $page_id, 180);
+        set_transient('ue_final_home_logo_notice', $page_id, 180);
         break;
     }
 }
-add_action('admin_init', 'ue_create_elementor_logo_upload_slot', 200);
+add_action('admin_init', 'ue_apply_final_home_logo', 300);
 
-function ue_logo_upload_slot_admin_notice() {
-    $page_id = (int) get_transient('ue_logo_upload_slot_notice');
+function ue_final_home_logo_notice() {
+    $page_id = (int) get_transient('ue_final_home_logo_notice');
     if (!$page_id) {
         return;
     }
 
-    delete_transient('ue_logo_upload_slot_notice');
-    echo '<div class="notice notice-success is-dismissible"><p><strong>Logo upload area added:</strong> open page ID ' . esc_html($page_id) . ' with Elementor. The first widget is now an empty Image widget. Click it → Choose Image → Upload Files.</p></div>';
+    delete_transient('ue_final_home_logo_notice');
+    echo '<div class="notice notice-success is-dismissible"><p><strong>UpscaleEra logo placed:</strong> the actual logo is now the first editable Elementor widget on page ID ' . esc_html($page_id) . '.</p></div>';
 }
-add_action('admin_notices', 'ue_logo_upload_slot_admin_notice');
+add_action('admin_notices', 'ue_final_home_logo_notice');
