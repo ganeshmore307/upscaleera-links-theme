@@ -23,7 +23,7 @@ function ue_links_child_assets() {
         'ue-links-child',
         get_stylesheet_uri(),
         array(),
-        '2.0.0'
+        '2.0.1'
     );
 
     $css = <<<'CSS'
@@ -66,37 +66,57 @@ body.page-id-12 .elementor-section{
     box-shadow:0 10px 24px rgba(71,43,20,.08);
     border-color:#f0b68f!important;
 }
-.ue-link-card .elementor-icon-box-wrapper{
+
+/* Link cards: icon | text | arrow in a single row on ALL breakpoints. */
+body.page-id-12 .ue-link-card.elementor-widget-icon-box .elementor-icon-box-wrapper,
+body.page-id-12 .ue-link-card .elementor-icon-box-wrapper{
     display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
     align-items:center!important;
+    justify-content:flex-start!important;
     text-align:left!important;
 }
-.ue-link-card .elementor-icon-box-icon{
+body.page-id-12 .ue-link-card .elementor-icon-box-icon{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:0 0 auto!important;
     margin:0 16px 0 0!important;
-    flex:0 0 auto;
+    padding:0!important;
 }
-.ue-link-card .elementor-icon-box-content{
-    flex:1 1 auto;
-    min-width:0;
-}
-.ue-link-card .elementor-icon-box-title{
+body.page-id-12 .ue-link-card .elementor-icon-box-content{
+    display:block!important;
+    flex:1 1 auto!important;
+    width:auto!important;
+    min-width:0!important;
     margin:0!important;
 }
-.ue-link-card .elementor-icon-box-title a{
-    display:flex!important;
-    align-items:center;
-    justify-content:space-between;
-    gap:14px;
-    width:100%;
-    color:#1b1b1b!important;
+body.page-id-12 .ue-link-card .elementor-icon-box-title{
+    margin:0!important;
+    width:100%!important;
 }
-.ue-link-card .elementor-icon-box-title a:after{
+body.page-id-12 .ue-link-card .elementor-icon-box-title a{
+    display:flex!important;
+    flex-direction:row!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:14px!important;
+    width:100%!important;
+    min-width:0!important;
+    color:#1b1b1b!important;
+    white-space:nowrap!important;
+}
+body.page-id-12 .ue-link-card .elementor-icon-box-title a:after{
     content:'→';
+    flex:0 0 auto;
+    margin-left:auto;
     color:#f26a21;
     font-size:26px;
     line-height:1;
     font-weight:400;
 }
+
 .ue-what-we-do-title .elementor-heading-title{
     display:flex;
     align-items:center;
@@ -167,7 +187,8 @@ body.page-id-12 .elementor-section{
     transform:translateY(-2px);
     border-color:#f26a21;
 }
-@media (max-width:480px){
+
+@media (max-width:767px){
     body.page-id-12 .elementor.elementor-12{
         max-width:100%;
         box-shadow:none;
@@ -175,6 +196,40 @@ body.page-id-12 .elementor-section{
     .ue-brand-logo img{
         max-width:215px;
     }
+
+    /* Override Elementor's mobile icon-box stacking rules. */
+    body.page-id-12 .ue-link-card.elementor-widget-icon-box .elementor-icon-box-wrapper,
+    body.page-id-12 .ue-link-card.elementor-widget-icon-box.elementor-position-top .elementor-icon-box-wrapper,
+    body.page-id-12 .ue-link-card.elementor-widget-icon-box.elementor-mobile-position-top .elementor-icon-box-wrapper,
+    body.page-id-12 .ue-link-card .elementor-icon-box-wrapper{
+        display:flex!important;
+        flex-direction:row!important;
+        flex-wrap:nowrap!important;
+        align-items:center!important;
+        text-align:left!important;
+    }
+    body.page-id-12 .ue-link-card .elementor-icon-box-icon{
+        margin:0 14px 0 0!important;
+        padding:0!important;
+        flex:0 0 34px!important;
+    }
+    body.page-id-12 .ue-link-card .elementor-icon-box-content{
+        flex:1 1 auto!important;
+        width:calc(100% - 48px)!important;
+    }
+    body.page-id-12 .ue-link-card .elementor-icon-box-title,
+    body.page-id-12 .ue-link-card .elementor-icon-box-title a{
+        margin:0!important;
+        width:100%!important;
+    }
+    body.page-id-12 .ue-link-card .elementor-icon-box-title a{
+        display:flex!important;
+        flex-direction:row!important;
+        align-items:center!important;
+        justify-content:space-between!important;
+        white-space:nowrap!important;
+    }
+
     .ue-service-pill .elementor-icon-box-title{
         font-size:11px!important;
     }
