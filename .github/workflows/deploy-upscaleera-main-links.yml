@@ -17,32 +17,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate required FTP secrets
+      - name: Validate FTP password
         shell: bash
         env:
-          MAIN_FTP_SERVER: ${{ secrets.MAIN_FTP_SERVER }}
-          MAIN_FTP_USERNAME: ${{ secrets.MAIN_FTP_USERNAME }}
-          MAIN_FTP_PASSWORD: ${{ secrets.MAIN_FTP_PASSWORD }}
+          MAIN_FTP_PASSWORD: ${{ secrets.MAIN_FTP_PASSWORD || secrets.FTP_PASSWORD }}
         run: |
           set -e
-          test -n "$MAIN_FTP_SERVER" || { echo "MAIN_FTP_SERVER is missing"; exit 1; }
-          test -n "$MAIN_FTP_USERNAME" || { echo "MAIN_FTP_USERNAME is missing"; exit 1; }
-          test -n "$MAIN_FTP_PASSWORD" || { echo "MAIN_FTP_PASSWORD is missing"; exit 1; }
+          test -n "$MAIN_FTP_PASSWORD" || { echo "MAIN_FTP_PASSWORD is missing. Add it in Settings > Secrets and variables > Actions."; exit 1; }
 
       - name: Upload links MU plugin to upscaleera.com
         shell: bash
         env:
-          MAIN_FTP_SERVER: ${{ secrets.MAIN_FTP_SERVER }}
-          MAIN_FTP_USERNAME: ${{ secrets.MAIN_FTP_USERNAME }}
-          MAIN_FTP_PASSWORD: ${{ secrets.MAIN_FTP_PASSWORD }}
+          MAIN_FTP_PASSWORD: ${{ secrets.MAIN_FTP_PASSWORD || secrets.FTP_PASSWORD }}
         run: |
           set -e
-          curl --fail --show-error --silent \
+          curl --fail --show-error --verbose \
             --ftp-create-dirs \
             --ftp-pasv \
-            --user "$MAIN_FTP_USERNAME:$MAIN_FTP_PASSWORD" \
+            --user "u868739083:$MAIN_FTP_PASSWORD" \
             --upload-file "main-site-mu-plugin/upscaleera-main-links.php" \
-            "ftp://$MAIN_FTP_SERVER/public_html/wp-content/mu-plugins/upscaleera-main-links.php"
+            "ftp://217.21.89.61/public_html/wp-content/mu-plugins/upscaleera-main-links.php"
 
       - name: Deployment complete
         run: echo "UpscaleEra main /links/ MU plugin uploaded successfully."
