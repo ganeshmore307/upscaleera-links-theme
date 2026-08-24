@@ -145,33 +145,16 @@ function ue_el_section($elements, $background = '#FFF8F0', $padding = null, $mar
 
 function ue_build_elementor_home_data() {
     $data = array();
-    $logo_id = (int) get_theme_mod('custom_logo');
-    $hero = array();
+    $hero = array(
+        ue_el_text('<strong style="letter-spacing:.24em;color:#F26622;font-size:10px;">UPSCALERA DIGITAL GROWTH STUDIO</strong>', 10, '#F26622'),
+        ue_el_heading('Performance. Creativity. Growth.', 48, '#171717', 'center', 'h1'),
+        ue_el_text('Performance marketing, creative strategy, websites and AI automation — connected into one premium growth system.', 14, '#746E67'),
+    );
 
-    if ($logo_id) {
-        $logo_url = wp_get_attachment_image_url($logo_id, 'full');
-        if ($logo_url) {
-            $hero[] = ue_el_widget('image', array(
-                'image' => array('url' => $logo_url, 'id' => $logo_id, 'alt' => 'UpscaleEra'),
-                'image_size' => 'full',
-                'align' => 'center',
-                'width' => array('unit' => '%', 'size' => 42, 'sizes' => array()),
-                '_margin' => ue_el_edge(0, 0, 18, 0),
-            ));
-        }
-    }
-
-    if (!$hero) {
-        $hero[] = ue_el_heading('upscaleEra', 34, '#171717', 'center', 'div');
-    }
-
-    $hero[] = ue_el_text('<strong style="letter-spacing:.24em;color:#F26622;font-size:10px;">DIGITAL GROWTH AGENCY</strong>', 10, '#F26622');
-    $hero[] = ue_el_heading('Performance. Creativity. Growth.', 48, '#171717', 'center', 'h1');
-    $hero[] = ue_el_text('Performance marketing, creative strategy, websites and AI automation — built to help ambitious brands grow.', 14, '#746E67');
     $data[] = ue_el_section($hero, '#FFF8F0', ue_el_edge(46, 22, 26, 22));
 
     $data[] = ue_el_section(array(
-        ue_el_text('<strong style="font-size:19px;color:#fff;">Let’s build your next growth system.</strong><br><span style="font-size:12px;color:#BBB3AC;">Start a conversation with the UpscaleEra team.</span>', 14, '#FFFFFF', 'left'),
+        ue_el_text('<strong style="font-size:19px;color:#fff;">Ready to grow your brand?</strong><br><span style="font-size:12px;color:#BBB3AC;">Start a conversation with the UpscaleEra team.</span>', 14, '#FFFFFF', 'left'),
         ue_el_button('Chat on WhatsApp  →', 'https://wa.me/919764970030', '#F26622', '#FFFFFF'),
     ), '#151515', ue_el_edge(20, 20, 20, 20), ue_el_edge(0, 18, 14, 18), 24);
 
@@ -222,15 +205,11 @@ function ue_build_elementor_home_data() {
 }
 
 function ue_install_elementor_homepage() {
-    if (!is_admin() || !current_user_can('manage_options')) {
+    if (!is_admin()) {
         return;
     }
 
-    if (!did_action('elementor/loaded') && !class_exists('Elementor\\Plugin')) {
-        return;
-    }
-
-    $seed_version = '3.0.1';
+    $seed_version = '4.0.0';
     if (get_option('ue_elementor_home_seed_version') === $seed_version) {
         return;
     }
@@ -258,6 +237,7 @@ function ue_install_elementor_homepage() {
 
     wp_update_post(array(
         'ID' => $front_id,
+        'post_title' => 'Home',
         'post_status' => 'publish',
         'post_content' => '',
     ));
@@ -272,12 +252,13 @@ function ue_install_elementor_homepage() {
     update_option('show_on_front', 'page');
     update_option('page_on_front', $front_id);
     update_option('ue_elementor_home_seed_version', $seed_version, false);
+    update_option('ue_elementor_home_seeded_page_id', $front_id, false);
 
-    if (class_exists('Elementor\\Plugin')) {
+    if (class_exists('\\Elementor\\Plugin')) {
         $elementor = \Elementor\Plugin::instance();
         if ($elementor && isset($elementor->files_manager)) {
             $elementor->files_manager->clear_cache();
         }
     }
 }
-add_action('admin_init', 'ue_install_elementor_homepage', 30);
+add_action('admin_init', 'ue_install_elementor_homepage', 5);
