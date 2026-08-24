@@ -9,7 +9,6 @@ if (!defined('ABSPATH')) {
 }
 
 require_once get_stylesheet_directory() . '/inc/elementor-home-seeder.php';
-require_once get_stylesheet_directory() . '/inc/elementor-logo-patch.php';
 require_once get_stylesheet_directory() . '/inc/elementor-logo-upload-slot.php';
 
 function ue_links_setup() {
@@ -34,12 +33,12 @@ function ue_links_child_assets() {
         'ue-links-child',
         get_stylesheet_uri(),
         array(),
-        '1.4.0'
+        '1.5.0'
     );
 
     wp_add_inline_style(
         'ue-links-child',
-        'html,body.ue-elementor-site{margin:0;padding:0;background:#FFF8F0;} .ue-elementor-home{width:100%;margin:0;padding:0;overflow:hidden;} .ue-elementor-home .elementor{width:100%;}'
+        'html,body.ue-elementor-site{margin:0;padding:0;background:#FFF8F0;} .ue-elementor-home{width:100%;margin:0;padding:0;overflow:hidden;} .ue-elementor-home .elementor{width:100%;} .ue-brand-logo img{max-width:245px;width:100%;height:auto;}'
     );
 }
 add_action('wp_enqueue_scripts', 'ue_links_child_assets', 50);
