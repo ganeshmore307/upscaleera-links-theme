@@ -26,11 +26,28 @@ jobs:
           MAIN_FTP_PASSWORD: ${{ secrets.MAIN_FTP_PASSWORD }}
         run: |
           if [ -z "$MAIN_FTP_PASSWORD" ]; then
-            echo "ERROR: Repository secret MAIN_FTP_PASSWORD is missing."
-            echo "Add it at Settings > Secrets and variables > Actions > Repository secrets."
+            echo "ERROR: MAIN_FTP_PASSWORD is missing."
+            echo "Create it in Settings > Secrets and variables > Actions > Repository secrets."
             exit 1
           fi
-          echo "Main FTP password secret is available."
+          echo "MAIN_FTP_PASSWORD is available."
+
+      - name: Test main FTP login
+        shell: bash
+        env:
+          MAIN_FTP_PASSWORD: ${{ secrets.MAIN_FTP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --silent \
+            --ftp-pasv \
+            --connect-timeout 20 \
+            --max-time 60 \
+            --user "u868739083:${MAIN_FTP_PASSWORD}" \
+            --list-only \
+            "ftp://217.21.89.61/" >/tmp/ftp-root.txt
+          echo "FTP login successful."
+          echo "FTP root listing:"
+          sed -n '1,30p' /tmp/ftp-root.txt
 
       - name: Upload links MU plugin to upscaleera.com
         shell: bash
@@ -38,15 +55,33 @@ jobs:
           MAIN_FTP_PASSWORD: ${{ secrets.MAIN_FTP_PASSWORD }}
         run: |
           set -euo pipefail
-          curl --fail --show-error --silent \
-            --ftp-create-dirs \
-            --ftp-pasv \
-            --connect-timeout 20 \
-            --max-time 120 \
-            --user "u868739083:${MAIN_FTP_PASSWORD}" \
-            --upload-file "main-site-mu-plugin/upscaleera-main-links.php" \
-            "ftp://217.21.89.61/public_html/wp-content/mu-plugins/upscaleera-main-links.php"
-          echo "Upload successful."
+          LOCAL_FILE="main-site-mu-plugin/upscaleera-main-links.php"
+          AUTH="u868739083:${MAIN_FTP_PASSWORD}"
+
+          echo "Trying Hostinger path: /public_html/wp-content/mu-plugins/"
+          if curl --fail --show-error --silent \
+            --ftp-create-dirs --ftp-pasv \
+            --connect-timeout 20 --max-time 120 \
+            --user "$AUTH" \
+            --upload-file "$LOCAL_FILE" \
+            "ftp://217.21.89.61/public_html/wp-content/mu-plugins/upscaleera-main-links.php"; then
+            echo "Upload successful using /public_html/wp-content/mu-plugins/."
+            exit 0
+          fi
+
+          echo "First path failed. Trying FTP-rooted path: /wp-content/mu-plugins/"
+          if curl --fail --show-error --silent \
+            --ftp-create-dirs --ftp-pasv \
+            --connect-timeout 20 --max-time 120 \
+            --user "$AUTH" \
+            --upload-file "$LOCAL_FILE" \
+            "ftp://217.21.89.61/wp-content/mu-plugins/upscaleera-main-links.php"; then
+            echo "Upload successful using /wp-content/mu-plugins/."
+            exit 0
+          fi
+
+          echo "ERROR: FTP login worked, but neither Hostinger destination path accepted the upload."
+          exit 1
 
       - name: Deployment complete
         run: echo "UpscaleEra main /links/ MU plugin deployed successfully."
