@@ -29,4 +29,17 @@ jobs:
             **/.git*
             **/.git*/**
             **/.github/**
+            mu-plugin/**
             README.md
+
+      - name: Deploy Elementor Home Bridge as MU plugin
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./mu-plugin/
+          server-dir: /public_html/wp-content/mu-plugins/
+          dangerous-clean-slate: false
