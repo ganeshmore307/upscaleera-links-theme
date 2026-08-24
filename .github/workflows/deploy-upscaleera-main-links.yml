@@ -1,0 +1,30 @@
+name: Deploy UpscaleEra Main Links Page
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'main-site-mu-plugin/**'
+      - '.github/workflows/deploy-upscaleera-main-links.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy links MU plugin to upscaleera.com
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.MAIN_FTP_SERVER }}
+          username: ${{ secrets.MAIN_FTP_USERNAME }}
+          password: ${{ secrets.MAIN_FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./main-site-mu-plugin/
+          server-dir: /public_html/wp-content/mu-plugins/
+          dangerous-clean-slate: false
