@@ -93,14 +93,16 @@ jobs:
 
           echo "Verifying deployed MU plugins..."
           MU_LIST="$(ftp_list "$DEST")"
-          printf '%s\n' "$MU_LIST" | sed -n '1,80p'
+          printf '%s\n' "$MU_LIST" | sed -n '1,100p'
 
           for REQUIRED in \
+            000-upscaleera-elementor-manual-mode.php \
             upscaleera-main-links.php \
             upscaleera-main-links-repair.php \
             upscaleera-links-route-fix.php \
             upscaleera-page1999-force.php \
-            zz-upscaleera-main-links-force.php; do
+            zz-upscaleera-main-links-force.php \
+            zzz-upscaleera-links-fallback.php; do
             printf '%s\n' "$MU_LIST" | grep -qx "$REQUIRED" || {
               echo "ERROR: ${REQUIRED} is not present in the live WordPress mu-plugins directory."
               exit 1
