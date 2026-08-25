@@ -31,7 +31,7 @@ jobs:
             exit 1
           fi
 
-      - name: Detect real WordPress root and deploy MU plugins
+      - name: Detect real WordPress root and clean old Links MU plugins
         shell: bash
         env:
           MAIN_FTP_PASSWORD: ${{ secrets.MAIN_FTP_PASSWORD }}
@@ -52,18 +52,13 @@ jobs:
               "ftp://${HOST}${path}" | tr -d '\r'
           }
 
-          echo "Checking FTP root..."
           ROOT_LIST="$(ftp_list "/")"
-          printf '%s\n' "$ROOT_LIST" | sed -n '1,40p'
-
           WP_BASE=""
 
           if printf '%s\n' "$ROOT_LIST" | grep -Eq '^(wp-admin|wp-content|wp-includes|wp-config\.php)$'; then
             WP_BASE="/"
           elif printf '%s\n' "$ROOT_LIST" | grep -qx 'public_html'; then
-            echo "Checking /public_html/..."
             PUBLIC_LIST="$(ftp_list "/public_html/")"
-            printf '%s\n' "$PUBLIC_LIST" | sed -n '1,40p'
             if printf '%s\n' "$PUBLIC_LIST" | grep -Eq '^(wp-admin|wp-content|wp-includes|wp-config\.php)$'; then
               WP_BASE="/public_html/"
             fi
@@ -71,45 +66,58 @@ jobs:
 
           if [ -z "$WP_BASE" ]; then
             echo "ERROR: Could not locate the real WordPress root."
-            echo "The workflow will not create guessed/nested public_html folders."
             exit 1
           fi
 
           echo "Detected WordPress root: ${WP_BASE}"
           DEST="${WP_BASE}wp-content/mu-plugins/"
 
-          for LOCAL_FILE in main-site-mu-plugin/*.php; do
-            NAME="$(basename "$LOCAL_FILE")"
-            echo "Uploading ${NAME} -> ${DEST}${NAME}"
+          # Neutralize all previous Links seed/repair/fallback plugins on the live site.
+          printf '%s\n' '<?php // Disabled by UpscaleEra Links clean deployment.' > /tmp/ue-disabled.php
+
+          LEGACY_FILES=(
+            "000-upscaleera-elementor-manual-mode.php"
+            "upscaleera-main-links.php"
+            "upscaleera-main-links-repair.php"
+            "upscaleera-links-route-fix.php"
+            "upscaleera-page1999-force.php"
+            "zz-upscaleera-main-links-force.php"
+            "zzz-upscaleera-links-fallback.php"
+          )
+
+          for NAME in "${LEGACY_FILES[@]}"; do
+            echo "Disabling legacy MU plugin: ${NAME}"
             curl --fail --show-error --silent \
               --ftp-create-dirs \
               --ftp-pasv \
               --connect-timeout 20 \
               --max-time 120 \
               --user "$AUTH" \
-              --upload-file "$LOCAL_FILE" \
+              --upload-file /tmp/ue-disabled.php \
               "ftp://${HOST}${DEST}${NAME}"
           done
 
-          echo "Verifying deployed MU plugins..."
+          # Upload only the clean, Elementor-preserving live plugin.
+          LIVE_FILE="main-site-mu-plugin/000-upscaleera-links-live.php"
+          echo "Uploading clean live plugin..."
+          curl --fail --show-error --silent \
+            --ftp-create-dirs \
+            --ftp-pasv \
+            --connect-timeout 20 \
+            --max-time 120 \
+            --user "$AUTH" \
+            --upload-file "$LIVE_FILE" \
+            "ftp://${HOST}${DEST}000-upscaleera-links-live.php"
+
+          echo "Verifying live MU plugin folder..."
           MU_LIST="$(ftp_list "$DEST")"
           printf '%s\n' "$MU_LIST" | sed -n '1,100p'
+          printf '%s\n' "$MU_LIST" | grep -qx '000-upscaleera-links-live.php' || {
+            echo "ERROR: clean live plugin is missing from the real WordPress mu-plugins directory."
+            exit 1
+          }
 
-          for REQUIRED in \
-            000-upscaleera-elementor-manual-mode.php \
-            upscaleera-main-links.php \
-            upscaleera-main-links-repair.php \
-            upscaleera-links-route-fix.php \
-            upscaleera-page1999-force.php \
-            zz-upscaleera-main-links-force.php \
-            zzz-upscaleera-links-fallback.php; do
-            printf '%s\n' "$MU_LIST" | grep -qx "$REQUIRED" || {
-              echo "ERROR: ${REQUIRED} is not present in the live WordPress mu-plugins directory."
-              exit 1
-            }
-          done
-
-          echo "Live WordPress MU plugin deployment verified."
+          echo "Clean deployment complete. Legacy Links writers are disabled."
 
       - name: Deployment complete
-        run: echo "UpscaleEra main /links/ deployment completed and verified."
+        run: echo "UpscaleEra /links/ is now Elementor-owned; GitHub no longer overwrites page content."
